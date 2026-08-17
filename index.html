@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PAI Generator</title>
+
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --red: #b91c1c;
+    --red-dark: #991b1b;
+    --red-light: #fef2f2;
+    --dark: #111827;
+    --gray: #6b7280;
+    --border: #e5e7eb;
+    --background: #f3f4f6;
+    --white: #ffffff;
+    --green: #15803d;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--background);
+    color: var(--dark);
+}
+
+/* HEADER */
+
+.header {
+    background: linear-gradient(135deg, #991b1b, #dc2626);
+    color: white;
+    padding: 28px 6%;
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: white;
+    color: var(--red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 25px;
+}
+
+.brand p {
+    margin: 4px 0 0;
+    opacity: .9;
+    font-size: 14px;
+}
+
+.badge {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.15);
+    font-size: 13px;
+}
+
+/* MAIN */
+
+.container {
+    width: 92%;
+    max-width: 1100px;
+    margin: 30px auto 60px;
+}
+
+.welcome {
+    margin-bottom: 22px;
+}
+
+.welcome h2 {
+    margin: 0 0 7px;
+    font-size: 25px;
+}
+
+.welcome p {
+    margin: 0;
+    color: var(--gray);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 20px;
+}
+
+.card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.04);
+}
+
+.card-title {
+    margin: 0 0 5px;
+    font-size: 18px;
+}
+
+.card-subtitle {
+    margin: 0 0 20px;
+    color: var(--gray);
+    font-size: 13px;
+}
+
+/* FORM */
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 12px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    font-size: 14px;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(185,28,28,.08);
+}
+
+/* KELAS */
+
+.section-label {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 9px;
+}
+
+.class-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 9px;
+}
+
+.class-option {
+    position: relative;
+}
+
+.class-option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.class-option label {
+    margin: 0;
+    padding: 13px 7px;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    cursor: pointer;
+    background: white;
+    font-weight: 700;
+    transition: .15s;
+}
+
+.class-option label:hover {
+    border-color: #fca5a5;
+}
+
+.class-option input:checked + label {
+    background: var(--red-light);
+    border-color: var(--red);
+    color: var(--red);
+}
+
+/* FASE OTOMATIS */
+
+.phase-box {
+    margin-top: 16px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f9fafb;
+    border: 1px solid var(--border);
+}
+
+.phase-title {
+    color: var(--gray);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.phase-value {
+    color: var(--red);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+/* DEVICE */
+
+.device-list {
+    display: grid;
+    gap: 9px;
+}
+
+.device {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.device:hover {
+    background: #fafafa;
+}
+
+.device input {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--red);
+}
+
+.device-info {
+    flex: 1;
+}
+
+.device-name {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.device-desc {
+    color: var(--gray);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+/* BUTTON */
+
+.button-group {
+    margin-top: 20px;
+}
+
+button {
+    width: 100%;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--red);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--red-dark);
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.reset {
+    margin-top: 9px;
+    background: #374151;
+}
+
+.reset:hover {
+    background: #1f2937;
+}
+
+/* STATUS */
+
+.status {
+    display: none;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status.show {
+    display: block;
+}
+
+.status.loading {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.status.success {
+    background: #f0fdf4;
+    color: var(--green);
+}
+
+.status.error {
+    background: #fef2f2;
+    color: var(--red-dark);
+}
+
+/* INFO */
+
+.info-box {
+    background: #fafafa;
+    border: 1px solid var(--border);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.info-box strong {
+    color: var(--red);
+}
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    color: var(--gray);
+    font-size: 12px;
+    padding: 25px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 800px) {
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+@media(max-width: 550px) {
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .class-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .container {
+        width: 94%;
+    }
+
+    .card {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="header">
+
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <div class="logo">
+                PAI
+            </div>
+
+            <div>
+                <h1>PAI Generator</h1>
+
+                <p>
+                    Generator Perangkat Pembelajaran PAI SD
+                </p>
+            </div>
+
+        </div>
+
+        <div class="badge">
+            Versi 2.2
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <div class="welcome">
+
+        <h2>
+            Buat Perangkat Pembelajaran
+        </h2>
+
+        <p>
+            Isi identitas, pilih kelas, lalu pilih perangkat yang diperlukan.
+        </p>
+
+    </div>
+
+
+    <div id="status" class="status"></div>
+
+
+    <div class="grid">
+
+
+        <!-- KOLOM KIRI -->
+
+        <div>
+
+
+            <!-- IDENTITAS -->
+
+            <div class="card">
+
+                <h3 class="card-title">
+                    Identitas Sekolah & Guru
+                </h3>
+
+                <p class="card-subtitle">
+                    Data ini digunakan untuk mengganti placeholder pada template Excel.
+                </p>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Nama Sekolah
+                    </label>
+
+                    <input
+                        type="text"
+                        id="namaSekolah"
+                        placeholder="Contoh: SDN Sukamaju"
+                    >
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Nama Kepala Sekolah
+                        </label>
+
+                        <input
+                            type="text"
+                            id="namaKS"
+                            placeholder="Nama Kepala Sekolah"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            NIP Kepala Sekolah
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nipKS"
+                            placeholder="NIP Kepala Sekolah"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Nama Guru
+                        </label>
+
+                        <input
+                            type="text"
+                            id="namaGuru"
+                            placeholder="Nama Guru PAI"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            NIP Guru
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nipGuru"
+                            placeholder="NIP Guru"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Desa
+                    </label>
+
+                    <input
+                        type="text"
+                        id="desa"
+                        placeholder="Nama Desa"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- KELAS -->
+
+            <div class="card">
+
+                <h3 class="card-title">
+                    Pilihan Kelas
+                </h3>
+
+                <p class="card-subtitle">
+                    Pilih kelas yang akan digunakan. Fase akan muncul otomatis.
+                </p>
+
+
+                <div class="section-label">
+                    Kelas
+                </div>
+
+
+                <div class="class-grid">
+
+
+                    <!-- SEMUA KELAS -->
+
+                    <div class="class-option">
+
+                        <input
+                            type="radio"
+                            name="kelas"
+                            id="semuaKelas"
+                            value="semua"
+                        >
+
+                        <label for="semuaKelas">
+                            Semua Kelas
+                        </label>
+
+                    </div>
+
+
+                    <!-- KELAS 1 -->
+
+                    <div class="class-option">
+
+                        <input
+                            type="radio"
+                            name="kelas"
+                            id="kelas1"
+                            value="1"
+                        >
+
+                        <label for="kelas1">
+                            Kelas 1
+                        </label>
+
+                    </div>
+
+
+                    <!-- KELAS 2 -->
+
+                    <div class="class-option">
+
+                        <input
+                            type="radio"
+                            name="kelas"
+                            id="kelas2"
+                            value="2"
+                        >
+
+                        <label for="kelas2">
+                            Kelas 2
+                        </label>
+
+                    </div>
+
+
+                    <!-- KELAS 3 -->
+
+                    <div class="class-option">
+
+                        <input
+                            type="radio"
+                            name="kelas"
+                            id="kelas3"
+                            value="3"
+                        >
+
+                        <label for="kelas3">
+                            Kelas 3
+                        </label>
+
+                    </div>
+
+
+                    <!-- KELAS 4 -->
+
+                    <div class="class-option">
+
+                        <input
+                            type="radio"
+                            name="kelas"
+                            id="kelas4"
+                            value="4"
+                        >
+
+                        <label for="kelas4">
+                            Kelas 4
+                        </label>
+
+                    </div>
+
+
+                    <!-- KELAS 5 -->
+
+                    <div class="class-option">
+
+                        <input
+                            type="radio"
+                            name="kelas"
+                            id="kelas5"
+                            value="5"
+                        >
+
+                        <label for="kelas5">
+                            Kelas 5
+                        </label>
+
+                    </div>
+
+
+                    <!-- KELAS 6 -->
+
+                    <div class="class-option">
+
+                        <input
+                            type="radio"
+                            name="kelas"
+                            id="kelas6"
+                            value="6"
+                        >
+
+                        <label for="kelas6">
+                            Kelas 6
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FASE OTOMATIS -->
+
+                <div class="phase-box">
+
+                    <div class="phase-title">
+                        Fase
+                    </div>
+
+                    <div
+                        id="fase"
+                        class="phase-value"
+                    >
+                        Pilih kelas terlebih dahulu
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- KOLOM KANAN -->
+
+        <div>
+
+
+            <!-- PERANGKAT -->
+
+            <div class="card">
+
+                <h3 class="card-title">
+                    Pilih Perangkat
+                </h3>
+
+                <p class="card-subtitle">
+                    Pilih perangkat yang ingin dibuat.
+                </p>
+
+
+                <div class="device-list">
+
+
+                    <label class="device">
+
+                        <input
+                            type="checkbox"
+                            class="device-check"
+                            data-file="ATP.xlsx"
+                            data-name="ATP"
+                            checked
+                        >
+
+                        <div class="device-info">
+
+                            <div class="device-name">
+                                ATP
+                            </div>
+
+                            <div class="device-desc">
+                                Alur Tujuan Pembelajaran
+                            </div>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="device">
+
+                        <input
+                            type="checkbox"
+                            class="device-check"
+                            data-file="PROTA.xlsx"
+                            data-name="PROTA"
+                            checked
+                        >
+
+                        <div class="device-info">
+
+                            <div class="device-name">
+                                PROTA
+                            </div>
+
+                            <div class="device-desc">
+                                Program Tahunan
+                            </div>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="device">
+
+                        <input
+                            type="checkbox"
+                            class="device-check"
+                            data-file="PROSEM.xlsx"
+                            data-name="PROSEM"
+                            checked
+                        >
+
+                        <div class="device-info">
+
+                            <div class="device-name">
+                                PROSEM
+                            </div>
+
+                            <div class="device-desc">
+                                Program Semester
+                            </div>
+
+                        </div>
+
+                    </label>
+
+
+                    <label class="device">
+
+                        <input
+                            type="checkbox"
+                            class="device-check"
+                            data-file="HBE JURNAL.xlsx"
+                            data-name="HBE JURNAL"
+                            checked
+                        >
+
+                        <div class="device-info">
+
+                            <div class="device-name">
+                                HBE JURNAL
+                            </div>
+
+                            <div class="device-desc">
+                                Hari Belajar Efektif & Jurnal
+                            </div>
+
+                        </div>
+
+                    </label>
+
+
+                </div>
+
+
+                <div class="button-group">
+
+                    <button id="generate">
+                        🚀 Generate Perangkat
+                    </button>
+
+                    <button
+                        id="rppButton"
+                        type="button"
+                        style="margin-top:9px;background:#111827;"
+                    >
+                        ✨ Buat RPP/Modul Ajar
+                    </button>
+
+                    <button
+                        id="reset"
+                        class="reset"
+                    >
+                        ↺ Reset
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CARA KERJA -->
+
+            <div class="card">
+
+                <h3 class="card-title">
+                    Cara Kerja
+                </h3>
+
+                <div class="info-box">
+
+                    <strong>01.</strong>
+                    Isi identitas.
+
+                    <br>
+
+                    <strong>02.</strong>
+                    Pilih kelas.
+
+                    <br>
+
+                    <strong>03.</strong>
+                    Fase ditentukan otomatis.
+
+                    <br>
+
+                    <strong>04.</strong>
+                    Pilih perangkat.
+
+                    <br>
+
+                    <strong>05.</strong>
+                    Template asli diproses.
+
+                    <br>
+
+                    <strong>06.</strong>
+                    Hasil diunduh dalam ZIP.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer>
+    PAI Generator · Generator Perangkat Pembelajaran PAI SD
+</footer>
+
+
+<script>
+
+/* =====================================================
+   MENENTUKAN FASE OTOMATIS
+===================================================== */
+
+function tentukanFase(kelas) {
+
+    if (kelas === "semua") {
+
+        return "Fase A, Fase B, Fase C";
+
+    }
+
+    if (
+        kelas === "1" ||
+        kelas === "2"
+    ) {
+
+        return "Fase A";
+
+    }
+
+    if (
+        kelas === "3" ||
+        kelas === "4"
+    ) {
+
+        return "Fase B";
+
+    }
+
+    if (
+        kelas === "5" ||
+        kelas === "6"
+    ) {
+
+        return "Fase C";
+
+    }
+
+    return "Pilih kelas terlebih dahulu";
+
+}
+
+
+/* =====================================================
+   KETIKA KELAS DIPILIH
+===================================================== */
+
+document
+    .querySelectorAll('input[name="kelas"]')
+    .forEach(function(item) {
+
+        item.addEventListener(
+            "change",
+            function() {
+
+                const fase =
+                    tentukanFase(
+                        this.value
+                    );
+
+
+                document
+                    .getElementById("fase")
+                    .textContent =
+                    fase;
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   AMBIL IDENTITAS
+===================================================== */
+
+function ambilData() {
+    const kelasElement = document.querySelector('input[name="kelas"]:checked');
+    const kelas = kelasElement ? kelasElement.value : "";
+
+    const data = {
+        "<Nama Sekolah>": document.getElementById("namaSekolah").value.trim(),
+        "<Nama KS>": document.getElementById("namaKS").value.trim(),
+        "<NIP KS>": document.getElementById("nipKS").value.trim(),
+        "<Nama Guru>": document.getElementById("namaGuru").value.trim(),
+        "<NIP Guru>": document.getElementById("nipGuru").value.trim(),
+        "<Desa>": document.getElementById("desa").value.trim(),
+        kelas: kelas,
+        fase: tentukanFase(kelas)
+    };
+
+    localStorage.setItem("paiGeneratorIdentity", JSON.stringify(data));
+    return data;
+}
+
+
+/* =====================================================
+   VALIDASI
+===================================================== */
+
+function validasi(data) {
+
+    if (!data["<Nama Sekolah>"]) {
+        return "Nama sekolah belum diisi.";
+    }
+
+    if (!data["<Nama KS>"]) {
+        return "Nama Kepala Sekolah belum diisi.";
+    }
+
+    if (!data["<NIP KS>"]) {
+        return "NIP Kepala Sekolah belum diisi.";
+    }
+
+    if (!data["<Nama Guru>"]) {
+        return "Nama Guru belum diisi.";
+    }
+
+    if (!data["<NIP Guru>"]) {
+        return "NIP Guru belum diisi.";
+    }
+
+    if (!data["<Desa>"]) {
+        return "Desa belum diisi.";
+    }
+
+    if (!data.kelas) {
+        return "Silakan pilih kelas.";
+    }
+
+    return "";
+
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function tampilStatus(
+    pesan,
+    tipe
+) {
+
+    const element =
+        document.getElementById(
+            "status"
+        );
+
+
+    element.textContent =
+        pesan;
+
+
+    element.className =
+        "status show " + tipe;
+
+}
+
+
+/* =====================================================
+   NAMA FILE AMAN
+===================================================== */
+
+function namaAman(nama) {
+
+    return nama.replace(
+        /[\\/:*?"<>|]/g,
+        "_"
+    );
+
+}
+
+
+/* =====================================================
+   GANTI PLACEHOLDER
+===================================================== */
+
+function replaceText(
+    value,
+    data
+) {
+
+    if (
+        typeof value !== "string"
+    ) {
+
+        return value;
+
+    }
+
+
+    let hasil = value;
+
+
+    const placeholders = [
+
+        "<Nama Sekolah>",
+        "<Nama KS>",
+        "<NIP KS>",
+        "<Nama Guru>",
+        "<NIP Guru>",
+        "<Desa>"
+
+    ];
+
+
+    placeholders.forEach(
+        function(placeholder) {
+
+            hasil =
+                hasil
+                    .split(placeholder)
+                    .join(
+                        data[placeholder]
+                    );
+
+        }
+    );
+
+
+    return hasil;
+
+}
+
+
+/* =====================================================
+   PROSES EXCEL
+===================================================== */
+
+async function prosesExcel(
+    fileName,
+    data
+) {
+
+    const response =
+        await fetch(
+            "templates/" +
+            encodeURIComponent(
+                fileName
+            )
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Template tidak ditemukan: " +
+            fileName
+        );
+
+    }
+
+
+    const buffer =
+        await response.arrayBuffer();
+
+
+    const workbook =
+        new ExcelJS.Workbook();
+
+
+    await workbook.xlsx.load(
+        buffer
+    );
+
+
+    /*
+       Semua sheet tetap dipertahankan.
+    */
+
+    workbook.eachSheet(
+        function(sheet) {
+
+            sheet.eachRow(
+                function(row) {
+
+                    row.eachCell(
+                        function(cell) {
+
+
+                            /* STRING */
+
+                            if (
+                                typeof cell.value ===
+                                "string"
+                            ) {
+
+                                cell.value =
+                                    replaceText(
+                                        cell.value,
+                                        data
+                                    );
+
+                            }
+
+
+                            /* RICH TEXT */
+
+                            else if (
+                                cell.value &&
+                                typeof cell.value ===
+                                "object" &&
+                                Array.isArray(
+                                    cell.value.richText
+                                )
+                            ) {
+
+                                cell.value
+                                    .richText
+                                    .forEach(
+                                        function(part) {
+
+                                            if (
+                                                typeof part.text ===
+                                                "string"
+                                            ) {
+
+                                                part.text =
+                                                    replaceText(
+                                                        part.text,
+                                                        data
+                                                    );
+
+                                            }
+
+                                        }
+                                    );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    return await workbook.xlsx.writeBuffer();
+
+}
+
+
+/* =====================================================
+   GENERATE
+===================================================== */
+
+document
+    .getElementById("generate")
+    .addEventListener(
+        "click",
+        async function() {
+
+            const button =
+                this;
+
+
+            const data =
+                ambilData();
+
+
+            const error =
+                validasi(data);
+
+
+            if (error) {
+
+                tampilStatus(
+                    "⚠️ " + error,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const devices =
+                Array.from(
+                    document.querySelectorAll(
+                        ".device-check:checked"
+                    )
+                );
+
+
+            if (
+                devices.length === 0
+            ) {
+
+                tampilStatus(
+                    "⚠️ Pilih minimal satu perangkat.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            button.disabled =
+                true;
+
+
+            button.textContent =
+                "⏳ Memproses...";
+
+
+            try {
+
+                const zip =
+                    new JSZip();
+
+
+                for (
+                    const device of devices
+                ) {
+
+                    const fileName =
+                        device.dataset.file;
+
+
+                    const deviceName =
+                        device.dataset.name;
+
+
+                    tampilStatus(
+                        "⏳ Memproses " +
+                        deviceName +
+                        "...",
+                        "loading"
+                    );
+
+
+                    const output =
+                        await prosesExcel(
+                            fileName,
+                            data
+                        );
+
+
+                    const baseName =
+                        fileName.replace(
+                            ".xlsx",
+                            ""
+                        );
+
+
+                    /*
+                       Nama output mengikuti
+                       pilihan kelas.
+                    */
+
+                    let targetName;
+
+
+                    if (
+                        data.kelas ===
+                        "semua"
+                    ) {
+
+                        targetName =
+                            "Semua Kelas";
+
+                    }
+
+                    else {
+
+                        targetName =
+                            "Kelas " +
+                            data.kelas;
+
+                    }
+
+
+                    const outputName =
+                        baseName +
+                        "_" +
+                        namaAman(
+                            targetName
+                        ) +
+                        "_" +
+                        namaAman(
+                            data["<Nama Sekolah>"]
+                        ) +
+                        ".xlsx";
+
+
+                    zip.file(
+                        outputName,
+                        output
+                    );
+
+                }
+
+
+                tampilStatus(
+                    "⏳ Menyiapkan ZIP...",
+                    "loading"
+                );
+
+
+                const zipBlob =
+                    await zip.generateAsync({
+                        type: "blob"
+                    });
+
+
+                let targetName;
+
+
+                if (
+                    data.kelas ===
+                    "semua"
+                ) {
+
+                    targetName =
+                        "Semua Kelas";
+
+                }
+
+                else {
+
+                    targetName =
+                        "Kelas " +
+                        data.kelas;
+
+                }
+
+
+                const zipName =
+                    "PAI_Generator_" +
+                    namaAman(
+                        targetName
+                    ) +
+                    "_" +
+                    namaAman(
+                        data["<Nama Sekolah>"]
+                    ) +
+                    ".zip";
+
+
+                const url =
+                    URL.createObjectURL(
+                        zipBlob
+                    );
+
+
+                const link =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                link.href =
+                    url;
+
+
+                link.download =
+                    zipName;
+
+
+                document.body.appendChild(
+                    link
+                );
+
+
+                link.click();
+
+
+                document.body.removeChild(
+                    link
+                );
+
+
+                URL.revokeObjectURL(
+                    url
+                );
+
+
+                tampilStatus(
+                    "✅ Berhasil! Perangkat " +
+                    targetName +
+                    " telah dibuat.",
+                    "success"
+                );
+
+            }
+
+            catch(error) {
+
+                console.error(
+                    error
+                );
+
+
+                tampilStatus(
+                    "❌ Terjadi kesalahan: " +
+                    error.message,
+                    "error"
+                );
+
+            }
+
+            finally {
+
+                button.disabled =
+                    false;
+
+
+                button.textContent =
+                    "🚀 Generate Perangkat";
+
+            }
+
+        }
+    );
+
+
+document.getElementById("rppButton").addEventListener("click", function() {
+    const data = ambilData();
+    const error = validasi(data);
+    if (error) {
+        tampilStatus("⚠️ " + error, "error");
+        return;
+    }
+    window.location.href = "rpp.html";
+});
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+document
+    .getElementById("reset")
+    .addEventListener(
+        "click",
+        function() {
+
+
+            document
+                .querySelectorAll(
+                    'input[type="text"]'
+                )
+                .forEach(
+                    function(input) {
+
+                        input.value =
+                            "";
+
+                    }
+                );
+
+
+            document
+                .querySelectorAll(
+                    'input[name="kelas"]'
+                )
+                .forEach(
+                    function(item) {
+
+                        item.checked =
+                            false;
+
+                    }
+                );
+
+
+            document
+                .querySelectorAll(
+                    ".device-check"
+                )
+                .forEach(
+                    function(item) {
+
+                        item.checked =
+                            true;
+
+                    }
+                );
+
+
+            document
+                .getElementById("fase")
+                .textContent =
+                "Pilih kelas terlebih dahulu";
+
+
+            document
+                .getElementById("status")
+                .className =
+                "status";
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

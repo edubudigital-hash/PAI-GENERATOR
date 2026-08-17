@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PAI Generator - RPP/Modul Ajar</title>
+<style>body{margin:0;font-family:Segoe UI,Arial;background:#f3f4f6;color:#111827}.head{background:#b91c1c;color:#fff;padding:22px}.wrap{max-width:1000px;margin:25px auto;padding:0 16px}.card{background:#fff;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 3px 15px #0000000d}h1{margin:0;font-size:24px}h2{font-size:18px;margin-top:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-weight:700;font-size:13px;display:block;margin-bottom:6px}input,select,textarea{width:100%;box-sizing:border-box;padding:11px;border:1px solid #d1d5db;border-radius:8px;font:inherit}textarea{min-height:300px;font-family:Consolas,monospace;font-size:12px}button{background:#b91c1c;color:white;border:0;border-radius:9px;padding:12px 16px;font-weight:700;cursor:pointer}.back{background:#374151;float:right}.identity{background:#f9fafb;border:1px solid #e5e7eb;padding:14px;border-radius:8px;line-height:1.8}.msg{padding:12px;border-radius:8px;margin-bottom:15px;display:none}.ok{display:block;background:#ecfdf5;color:#166534}.err{display:block;background:#fef2f2;color:#991b1b}@media(max-width:700px){.grid{grid-template-columns:1fr}.back{float:none;margin-top:12px}}</style></head>
+<body><div class="head"><div style="max-width:1000px;margin:auto"><button class="back" onclick="location.href='index.html'">← Dashboard</button><h1>✨ Buat RPP/Modul Ajar</h1><div>Pendidikan Agama Islam (PAI) SD</div></div></div>
+<div class="wrap"><div id="msg" class="msg"></div>
+<div class="card"><h2>Identitas</h2><div id="identity" class="identity">Memuat...</div></div>
+<div class="card"><h2>Data RPP/Modul Ajar</h2><div class="grid">
+<div><label>Fase/Kelas *</label><select id="kelas"><option value="">Pilih</option><option value="1">Kelas 1 — Fase A</option><option value="2">Kelas 2 — Fase A</option><option value="3">Kelas 3 — Fase B</option><option value="4">Kelas 4 — Fase B</option><option value="5">Kelas 5 — Fase C</option><option value="6">Kelas 6 — Fase C</option></select></div>
+<div><label>Semester *</label><select id="semester"><option value="">Pilih</option><option value="1">Semester 1</option><option value="2">Semester 2</option></select></div>
+<div><label>Tahun Pelajaran *</label><input id="tahun" placeholder="2026/2027"></div>
+<div><label>Alokasi Waktu *</label><select id="waktu"><option value="">Pilih</option><option>1 pertemuan (4×35 menit)</option><option>2 pertemuan (8×35 menit)</option><option>3 pertemuan (12×35 menit)</option><option>4 pertemuan (16×35 menit)</option><option>5 pertemuan (20×35 menit)</option><option>6 pertemuan (24×35 menit)</option></select></div></div>
+<p><label>Capaian Pembelajaran (CP) *</label><select id="cp"><option value="">Pilih Kelas dan Semester</option></select></p>
+<p><label>Materi Pokok *</label><select id="materi" disabled><option value="">Pilih CP</option></select></p>
+<p><label>Tujuan Pembelajaran (TP) *</label><select id="tp" disabled><option value="">Pilih Materi Pokok</option></select></p>
+<button id="generateAI" style="background:#111827;width:100%">🤖 Buat RPP</button></div>
+<div class="card"><h2>Hasil RPP/Modul Ajar</h2><div id="hasil" style="white-space:pre-wrap;line-height:1.7;font-size:14px;color:#111827">Belum ada hasil.</div></div></div>
+<script>
+const ident=JSON.parse(localStorage.getItem('paiGeneratorIdentity')||'null');
+const fase=k=>k<=2?'A':k<=4?'B':'C';
+const CP={A:{'Al-Qur’an Hadits':'Membaca dan membedakan huruf hijaiyah berharakat, huruf hijaiyah bersambung; menghafal surat Al-Fatihah, beberapa surat pendek Al-Qur’an, dan hadis tentang kebersihan.','Akidah':'Menjelaskan dan meyakini rukun iman, iman kepada Allah Swt., beberapa asmaulhusna, dan iman kepada malaikat.','Akhlak':'Menerapkan akhlak terhadap Allah Swt. dengan menyucikan dan memuji-Nya dan akhlak terhadap diri sendiri.','Fiqih':'Menerapkan rukun Islam, syahadatain, tata cara bersuci, salat fardu, zikir, dan berdoa setelah salat.','SPI':'Menceritakan kisah keteladanan beberapa nabi dan rasul.'},B:{'Al-Qur’an dan Hadits':'Membaca, menulis, dan membedakan huruf hijaiah bersambung; menghafal dan menjelaskan beberapa surah pendek, hadis tentang kewajiban salat dan menjaga hubungan baik dengan sesama.','Akidah':'Menjelaskan dan meyakini sifat sifat Allah Swt., iman kepada kitab-kitab Allah Swt. beberapa asmaulhusna, dan iman kepada rasul-rasul Allah Swt.','Akhlak':'Menerapkan akhlak terhadap Allah Swt. Dengan berbaik sangka kepada-Nya, akhlak terhadap orang tua, keluarga, dan guru.','Fiqih':'Menerapkan azan dan ikamah, salat jumat dan salat sunah, balig dan tanggung jawab yang menyertainya (taklif).','SPI':'Menceritakan dan menjelaskan kisah Nabi Muhammad saw. sebelum dan sesudah menjadi rasul periode Makkah.'},C:{'Al-Qur’an Hadits':'Membaca, menulis, dan membedakan huruf hijaiah bersambung; menjelaskan beberapa surat pendek dan hadis tentang berbuat baik kepada orang tua, guru, dan teman.','Akidah':'Menjelaskan dan meyakini beberapa asmaulhusna, iman kepada hari akhir, qada’ dan qadar.','Akhlak':'Menerapkan akhlak terhadap Allah Swt. dengan berdoa dan bertawakal kepada-Nya, akhlak terhadap teman, tetangga, non muslim, hewan, dan tumbuhan.','Fiqih':'Menerapkan puasa wajib dan sunah, makanan dan minuman yang halal dan haram, zakat, infak, sedekah, dan wakaf.','SPI':'Menceritakan dan menjelaskan kisah Nabi Muhammad saw. periode Madinah dan khulafaurasyidin.'}};
+const M={
+1:{1:[['Al-Qur’an Hadits','Huruf Hijaiyyah (Makharijul Huruf), Huruf Hijaiyyah Berharakat'],['Akidah','Rukun Iman'],['Akhlak','Akhlak terhadap Allah Swt. dengan Menyucikan-Nya'],['Fiqih','Rukun Islam dan Syahadatain'],['SPI','Kisah Keteladanan Nabi Adam as.']],2:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung, Surah Al-Fatihah'],['Akidah','Iman Kepada Allah Swt.'],['Akhlak','Akhlak terhadap Allah Swt. dengan Memuji-Nya'],['Fiqih','Tata Cara Bersuci (Wudu, Tayamum, dan Istinja\')'],['SPI','Kisah Keteladanan Nabi Idris as.']]},
+2:{1:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung (3 huruf), Surah An-Naas, Surah Al-Falaq'],['Akidah','Asmaul Husna: Ar-Rahman, Ar-Rahim, As-Salam, Al-Mukmin'],['Akhlak','Akhlak terhadap Diri Sendiri (Pola Hidup Bersih dan Sehat)'],['Fiqih','Shalat Fardhu'],['SPI','Kisah Keteladanan Nabi Nuh as.']],2:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung, Surah al-Ikhlas, Hadits tentang kebersihan'],['Akidah','Iman Kepada Malaikat Allah'],['Akhlak','Akhlak terhadap Diri Sendiri (Terbiasa Berdoa)'],['Fiqih','Dzikir dan Berdoa setelah Shalat'],['SPI','Kisah Keteladanan Nabi Ibrahim as.']]},
+3:{1:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung (3 kata), Mad Thabi\'i, Surah Al-Kautsar'],['Akidah','Sifat-sifat Allah Swt.'],['Akhlak','Akhlak terhadap Allah Swt. dengan Berbaik Sangka Kepada-Nya'],['Fiqih','Adzan dan Iqamah'],['SPI','Kelahiran dan Masa Kanak-kanak Nabi Muhammad Saw.']],2:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung, Idhar Halqi, Hadits tentang Kewajiban Shalat'],['Akidah','Iman Kepada Kitab-kitab Allah Swt.'],['Akhlak','Akhlak terhadap Orang Tua'],['Fiqih','Ketentuan dan Praktik Shalat Jum\'at'],['SPI','Masa Remaja dan Pernikahan Nabi Muhammad Saw.']]},
+4:{1:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung (3 kata), Idgham Bighunnah-Bilaghunnah, Surah An-Nashr'],['Akidah','Asmaul Husna (Al-Ghaffar, Al-Wahhab, Al-Fattah, Al-Latif)'],['Akhlak','Akhlak terhadap Keluarga'],['Fiqih','Shalat Sunnah Rawatib, Dhuha, dan Tahajjud'],['SPI','Kerasulan dan Dakwah Nabi Muhammad Saw. Periode Makkah']],2:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung, Iqlab dan Ikhfa\', Hadits tentang Menjaga Hubungan baik terhadap sesama'],['Akidah','Iman Kepada Rasul-rasul Allah Swt.'],['Akhlak','Akhlak terhadap Guru'],['Fiqih','Baligh dan Tanggungjawab yang menyertainya (Taklif)'],['SPI','Hijrah Nabi Muhammad Saw.']]},
+5:{1:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung (3 kata), Hukum Mim Sukun, Surah Al-\'Ashr'],['Akidah','Asmaul Husna (Al-Halim, As-Syakur, Al-Hakim, Al-Wadud)'],['Akhlak','Akhlak terhadap Allah Swt. dengan Berdoa dan Bertawakkal kepada-Nya'],['Fiqih','Puasa Wajib dan Sunnah'],['SPI','Kepemimpinan Nabi Muhammad Saw. di Madinah']],2:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung, Qalqalah, Hadits tentang Berbuat baik kepada Orangtua dan Guru'],['Akidah','Iman Kepada Hari Akhir'],['Akhlak','Akhlak terhadap Teman'],['Fiqih','Makanan Minuman yang Halal dan Haram'],['SPI','Perjanjian Hudaibiyah, Fathu Makkah, dan Haji Wada\'']]},
+6:{1:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung (3 kata), Bacaan Ghunnah, Surah Al-Insyirah'],['Akidah','Asmaul Husna (Al-Waliy, Al-Hamid, Al-\'Adl, As-Shabur)'],['Akhlak','Akhlak Terhadap Tetangga dan non muslim'],['Fiqih','Zakat, Infaq, dan Sedekah'],['SPI','Kisah Keteladanan Abu Bakar As-Shiddiq dan Umar bin Khattab']],2:[['Al-Qur’an Hadits','Huruf Hijaiyyah Bersambung, Bacaan Tafkhim Tarqiq, Hadits tentang Berbuat Baik terhadap Teman'],['Akidah','Iman Kepada Qada\' dan Qadar'],['Akhlak','Akhlak terhadap Hewan dan Lingkungan'],['Fiqih','Wakaf (Pengertian, Dasar Hukum, dan Jenis)'],['SPI','Kisah Keteladanan Ustman bin Affan dan Ali bin Abi Thalib']]}};
+const TP={};
+const tpData={1:{1:['makharijul huruf dan huruf hijaiyyah berharakat','rukun iman','menyucikan-Nya (tasbih)','rukun Islam dan syahadatain','keteladanan Nabi Adam'],2:['huruf hijaiyyah bersambung dan Surah Al-Fatihah','iman kepada Allah Swt.','memuji Allah Swt.','tata cara bersuci','keteladanan Nabi Idris']},2:{1:['huruf hijaiyyah bersambung, Surah An-Naas, dan Surah Al-Falaq','Asmaul Husna Ar-Rahman, Ar-Rahim, As-Salam, Al-Mukmin','pola hidup bersih dan sehat','shalat fardu','keteladanan Nabi Nuh'],2:['huruf hijaiyyah bersambung, Surah Al-Ikhlas, dan hadits tentang kebersihan','iman kepada malaikat Allah','terbiasa berdoa','zikir dan doa setelah shalat','keteladanan Nabi Ibrahim']},3:{1:['huruf hijaiyyah bersambung, mad thabi’i, dan Surah Al-Kautsar','sifat-sifat Allah Swt.','berbaik sangka kepada Allah Swt.','adzan dan iqamah','kelahiran dan masa kanak-kanak Nabi Muhammad Saw.'],2:['huruf hijaiyyah bersambung, Idhar Halqi, dan hadits tentang kewajiban shalat','iman kepada kitab-kitab Allah Swt.','hormat/patuh/berbakti kepada orang tua','shalat Jumat','masa remaja dan pernikahan Nabi Muhammad Saw.']},4:{1:['huruf hijaiyyah bersambung, Idgham Bighunnah/Bilaghunnah, dan Surah An-Nashr','Asmaul Husna Al-Ghaffar, Al-Wahhab, Al-Fattah, Al-Latif','akhlak terhadap keluarga','shalat sunnah Rawatib, Dhuha, dan Tahajud','kerasulan dan dakwah Nabi Muhammad periode Makkah'],2:['huruf hijaiyyah bersambung, Iqlab/Ikhfa, dan hadits tentang menjaga hubungan baik terhadap sesama','iman kepada rasul','hormat/santun/menghargai guru','baligh, tanggung jawab, dan mukalaf','hijrah Nabi Muhammad ke Madinah']},5:{1:['huruf hijaiyyah bersambung, Mim Sukun, dan Surah Al-‘Ashr','Asmaul Husna Al-Halim, As-Syakur, Al-Hakim, Al-Wadud','berdoa dan tawakal','puasa wajib dan sunnah','kepemimpinan Nabi Muhammad di Madinah'],2:['huruf hijaiyyah bersambung, Qalqalah, dan hadits tentang berbuat baik kepada orangtua dan guru','iman kepada hari akhir','saling menghormati, peduli, dan kerja sama dengan teman','makanan dan minuman halal dan haram','Hudaibiyah, Fathu Makkah, dan Haji Wada']},6:{1:['huruf hijaiyyah bersambung, ghunnah, dan Surah Al-Insyirah','Asmaul Husna Al-Waliy, Al-Hamid, Al-‘Adl, As-Shabur','tetangga dan non-Muslim','zakat, infak, dan sedekah','keteladanan Abu Bakar As-Shiddiq dan Umar'],2:['huruf hijaiyyah bersambung, tafkhim/tarqiq, dan hadits tentang berbuat baik terhadap teman','qada’ dan qadar','hewan dan lingkungan','wakaf','keteladanan Utsman bin Affan dan Ali bin Abi Thalib']}};
+function makeTP(k,s,i){let d=tpData[k]?.[s]?.[i];return d?`Peserta didik mampu mengintegrasikan pemahaman tentang ${d} ke dalam perilaku dan kehidupan sehari-hari dengan benar.`:''}
+function resetCP(){cp.innerHTML='<option value="">Pilih CP</option>';materi.innerHTML='<option value="">Pilih CP</option>';materi.disabled=true;tp.innerHTML='<option value="">Pilih Materi Pokok</option>';tp.disabled=true;let k=+kelas.value;if(!k||!semester.value)return;Object.entries(CP[fase(k)]).forEach(([sub,text])=>{cp.add(new Option(sub,sub))})}
+kelas.onchange=resetCP;semester.onchange=resetCP;
+cp.onchange=()=>{materi.innerHTML='<option value="">Pilih Materi Pokok</option>';tp.innerHTML='<option value="">Pilih Materi Pokok</option>';tp.disabled=true;let k=+kelas.value,s=+semester.value;if(!k||!s||!cp.value)return;let found=false;M[k][s].forEach((x,i)=>{if(x[0]===cp.value){materi.add(new Option(x[1],i));found=true}});materi.disabled=!found}
+materi.onchange=()=>{tp.innerHTML='<option value="">Pilih Tujuan Pembelajaran</option>';let k=+kelas.value,s=+semester.value,i=+materi.value;let t=makeTP(k,s,i);if(t)tp.add(new Option(t,t));tp.disabled=!t}
+if(ident){identity.innerHTML=`<b>Nama Sekolah:</b> ${ident['<Nama Sekolah>']}<br><b>Nama Kepala Sekolah:</b> ${ident['<Nama KS>']}<br><b>NIP Kepala Sekolah:</b> ${ident['<NIP KS>']}<br><b>Nama Guru:</b> ${ident['<Nama Guru>']}<br><b>NIP Guru:</b> ${ident['<NIP Guru>']}<br><b>Desa:</b> ${ident['<Desa>']}<br><b>Mata Pelajaran:</b> Pendidikan Agama Islam (PAI)`}else{identity.textContent='Identitas belum ditemukan. Kembali ke dashboard.'}
+function bangunPrompt(){
+  const k=+kelas.value;
+  return `Anda adalah penyusun RPP/Modul Ajar Pendidikan Agama Islam (PAI) SD.
+
+DATA OTORITATIF:
+Nama Sekolah: ${ident['<Nama Sekolah>']}
+Nama Kepala Sekolah: ${ident['<Nama KS>']}
+NIP Kepala Sekolah: ${ident['<NIP KS>']}
+Nama Guru: ${ident['<Nama Guru>']}
+NIP Guru: ${ident['<NIP Guru>']}
+Desa: ${ident['<Desa>']}
+Mata Pelajaran: Pendidikan Agama Islam (PAI)
+Fase/Kelas: Fase ${fase(k)} / Kelas ${k}
+Semester: ${semester.value}
+Tahun Pelajaran: ${tahun.value}
+Alokasi Waktu: ${waktu.value}
+CP (${cp.options[cp.selectedIndex].text}): ${CP[fase(k)][cp.value]}
+Materi Pokok: ${materi.options[materi.selectedIndex].text}
+Tujuan Pembelajaran: ${tp.options[tp.selectedIndex].text}
+
+INSTRUKSI:
+Susun RPP/Modul Ajar lengkap dan siap digunakan guru. Jangan mengubah CP, Materi Pokok, atau Tujuan Pembelajaran. Selaraskan seluruh isi dengan Kurikulum Merdeka, Pembelajaran Mendalam, Taksonomi SOLO, dan HOTS. Gunakan istilah Taksonomi SOLO dalam bahasa Indonesia tanpa istilah bahasa Inggris. Jumlah pertemuan harus mengikuti alokasi waktu.
+
+WAJIB MEMUAT:
+A. Identitas
+B. Capaian Pembelajaran
+C. Tujuan Pembelajaran
+D. Materi Pokok
+E. KKTP
+F. 8 Dimensi Profil Lulusan
+G. Pertanyaan Pemantik
+H. Langkah Pembelajaran setiap pertemuan
+I. Asesmen Sikap, Religius, Pengetahuan, dan Psikomotor/Praktik lengkap dengan instrumen, kriteria, rubrik, dan penskoran
+J. 5 soal pilihan ganda kompleks
+K. 5 soal cerita
+L. Refleksi guru dan peserta didik
+M. Tugas Remedial
+N. Tugas Pengayaan
+O. Penutup dan tanda tangan Kepala Sekolah serta Guru PAI.
+
+Gunakan bahasa formal, realistis untuk peserta didik SD, tidak menambahkan materi di luar materi pokok, dan susun rapi untuk A4 serta siap dipindahkan ke Word/PDF.`;
+}
+
+generateAI.onclick=async()=>{
+  if(!ident||!kelas.value||!semester.value||!tahun.value||!waktu.value||!cp.value||!materi.value||!tp.value){
+    msg.textContent='⚠️ Lengkapi semua data terlebih dahulu.';
+    msg.className='msg err';
+    return;
+  }
+  generateAI.disabled=true;
+  generateAI.textContent='⏳ Menyusun RPP...';
+  hasil.textContent='AI sedang menyusun RPP/Modul Ajar...';
+  try{
+    const prompt=bangunPrompt();
+    const res=await fetch('/api/generate-rpp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const raw=await res.text();
+    let data;
+    try{data=raw?JSON.parse(raw):{};}catch(e){throw new Error('Server tidak mengembalikan JSON. Pastikan aplikasi dijalankan melalui Vercel/`vercel dev`, bukan Live Server biasa.');}
+    if(!res.ok) throw new Error(data.error||'Gagal membuat RPP.');
+    hasil.textContent=data.text||'AI tidak mengembalikan isi RPP.';
+    msg.textContent='✅ RPP berhasil dibuat.';
+    msg.className='msg ok';
+  }catch(e){
+    console.error(e);
+    hasil.textContent='';
+    msg.textContent='❌ '+e.message;
+    msg.className='msg err';
+  }finally{
+    generateAI.disabled=false;
+    generateAI.textContent='🤖 Buat RPP';
+  }
+};
+</script></body></html>
