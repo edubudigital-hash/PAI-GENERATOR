@@ -4,48 +4,75 @@ export default async function handler(req, res) {
   }
 
   try {
-    let body = req.body;
-    if (typeof body === 'string') {
-      try { body = JSON.parse(body); } catch { body = {}; }
-    }
-    const { prompt } = body || {};
+    const body = req.body || {};
+    const prompt = body.prompt;
+
     if (!prompt || typeof prompt !== 'string') {
       return res.status(400).json({ error: 'Prompt belum dikirim.' });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    const model = process.env.OPENAI_MODEL || 'gpt-5.6';
+    const apiKey = process.env.GEMINI_API_KEY;
+    const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
 
     if (!apiKey) {
       return res.status(500).json({
-        error: 'OPENAI_API_KEY belum dipasang di Vercel → Settings → Environment Variables.'
+        error: 'GEMINI_API_KEY belum dipasang di Vercel.'
       });
     }
 
-    const response = await fetch('https://api.openai.com/v1/responses', {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model,
-        input: prompt
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: prompt }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          topP: 0.9,
+          maxOutputTokens: 12000
+        }
       })
     });
 
-    const data = await response.json();
+    const raw = await response.text();
+    let data = {};
 
-    if (!response.ok) {
-      return res.status(response.status).json({
-        error: data?.error?.message || 'OpenAI API gagal memproses permintaan.'
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      return res.status(502).json({
+        error: 'Gemini mengembalikan respons yang tidak valid.'
       });
     }
 
-    return res.status(200).json({
-      text: data.output_text || ''
-    });
+    if (!response.ok) {
+      const message =
+        data?.error?.message ||
+        `Gemini API gagal memproses permintaan (HTTP ${response.status}).`;
+      return res.status(response.status).json({ error: message });
+    }
+
+    const text = (data?.candidates || [])
+      .flatMap(candidate => candidate?.content?.parts || [])
+      .map(part => part?.text || '')
+      .join('')
+      .trim();
+
+    if (!text) {
+      return res.status(502).json({
+        error: 'Gemini tidak mengembalikan teks RPP.'
+      });
+    }
+
+    return res.status(200).json({ text });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       error: error?.message || 'Terjadi kesalahan pada server.'
     });

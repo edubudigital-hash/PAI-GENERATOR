@@ -12,7 +12,7 @@
 <p><label>Capaian Pembelajaran (CP) *</label><select id="cp"><option value="">Pilih Kelas dan Semester</option></select></p>
 <p><label>Materi Pokok *</label><select id="materi" disabled><option value="">Pilih CP</option></select></p>
 <p><label>Tujuan Pembelajaran (TP) *</label><select id="tp" disabled><option value="">Pilih Materi Pokok</option></select></p>
-<button id="generateAI" style="background:#111827;width:100%">🤖 Buat RPP</button></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button id="generateAI" style="background:#111827;width:100%">🤖 Buat RPP/Modul Ajar dengan AI</button></div></div>
 <div class="card"><h2>Hasil RPP/Modul Ajar</h2><div id="hasil" style="white-space:pre-wrap;line-height:1.7;font-size:14px;color:#111827">Belum ada hasil.</div></div></div>
 <script>
 const ident=JSON.parse(localStorage.getItem('paiGeneratorIdentity')||'null');
@@ -33,76 +33,34 @@ kelas.onchange=resetCP;semester.onchange=resetCP;
 cp.onchange=()=>{materi.innerHTML='<option value="">Pilih Materi Pokok</option>';tp.innerHTML='<option value="">Pilih Materi Pokok</option>';tp.disabled=true;let k=+kelas.value,s=+semester.value;if(!k||!s||!cp.value)return;let found=false;M[k][s].forEach((x,i)=>{if(x[0]===cp.value){materi.add(new Option(x[1],i));found=true}});materi.disabled=!found}
 materi.onchange=()=>{tp.innerHTML='<option value="">Pilih Tujuan Pembelajaran</option>';let k=+kelas.value,s=+semester.value,i=+materi.value;let t=makeTP(k,s,i);if(t)tp.add(new Option(t,t));tp.disabled=!t}
 if(ident){identity.innerHTML=`<b>Nama Sekolah:</b> ${ident['<Nama Sekolah>']}<br><b>Nama Kepala Sekolah:</b> ${ident['<Nama KS>']}<br><b>NIP Kepala Sekolah:</b> ${ident['<NIP KS>']}<br><b>Nama Guru:</b> ${ident['<Nama Guru>']}<br><b>NIP Guru:</b> ${ident['<NIP Guru>']}<br><b>Desa:</b> ${ident['<Desa>']}<br><b>Mata Pelajaran:</b> Pendidikan Agama Islam (PAI)`}else{identity.textContent='Identitas belum ditemukan. Kembali ke dashboard.'}
-function bangunPrompt(){
+function validasiForm(){
+  return ident && kelas.value && semester.value && tahun.value && waktu.value && cp.value && materi.value && tp.value;
+}
+
+function buatPromptInternal(){
   const k=+kelas.value;
-  return `Anda adalah penyusun RPP/Modul Ajar Pendidikan Agama Islam (PAI) SD.
-
-DATA OTORITATIF:
-Nama Sekolah: ${ident['<Nama Sekolah>']}
-Nama Kepala Sekolah: ${ident['<Nama KS>']}
-NIP Kepala Sekolah: ${ident['<NIP KS>']}
-Nama Guru: ${ident['<Nama Guru>']}
-NIP Guru: ${ident['<NIP Guru>']}
-Desa: ${ident['<Desa>']}
-Mata Pelajaran: Pendidikan Agama Islam (PAI)
-Fase/Kelas: Fase ${fase(k)} / Kelas ${k}
-Semester: ${semester.value}
-Tahun Pelajaran: ${tahun.value}
-Alokasi Waktu: ${waktu.value}
-CP (${cp.options[cp.selectedIndex].text}): ${CP[fase(k)][cp.value]}
-Materi Pokok: ${materi.options[materi.selectedIndex].text}
-Tujuan Pembelajaran: ${tp.options[tp.selectedIndex].text}
-
-INSTRUKSI:
-Susun RPP/Modul Ajar lengkap dan siap digunakan guru. Jangan mengubah CP, Materi Pokok, atau Tujuan Pembelajaran. Selaraskan seluruh isi dengan Kurikulum Merdeka, Pembelajaran Mendalam, Taksonomi SOLO, dan HOTS. Gunakan istilah Taksonomi SOLO dalam bahasa Indonesia tanpa istilah bahasa Inggris. Jumlah pertemuan harus mengikuti alokasi waktu.
-
-WAJIB MEMUAT:
-A. Identitas
-B. Capaian Pembelajaran
-C. Tujuan Pembelajaran
-D. Materi Pokok
-E. KKTP
-F. 8 Dimensi Profil Lulusan
-G. Pertanyaan Pemantik
-H. Langkah Pembelajaran setiap pertemuan
-I. Asesmen Sikap, Religius, Pengetahuan, dan Psikomotor/Praktik lengkap dengan instrumen, kriteria, rubrik, dan penskoran
-J. 5 soal pilihan ganda kompleks
-K. 5 soal cerita
-L. Refleksi guru dan peserta didik
-M. Tugas Remedial
-N. Tugas Pengayaan
-O. Penutup dan tanda tangan Kepala Sekolah serta Guru PAI.
-
-Gunakan bahasa formal, realistis untuk peserta didik SD, tidak menambahkan materi di luar materi pokok, dan susun rapi untuk A4 serta siap dipindahkan ke Word/PDF.`;
+  return `Anda adalah penyusun RPP/Modul Ajar Pendidikan Agama Islam (PAI) SD.\n\nDATA OTORITATIF:\nNama Sekolah: ${ident['<Nama Sekolah>']}\nNama Kepala Sekolah: ${ident['<Nama KS>']}\nNIP Kepala Sekolah: ${ident['<NIP KS>']}\nNama Guru: ${ident['<Nama Guru>']}\nNIP Guru: ${ident['<NIP Guru>']}\nDesa: ${ident['<Desa>']}\nMata Pelajaran: Pendidikan Agama Islam (PAI)\nFase/Kelas: Fase ${fase(k)} / Kelas ${k}\nSemester: ${semester.value}\nTahun Pelajaran: ${tahun.value}\nAlokasi Waktu: ${waktu.value}\nCP (${cp.options[cp.selectedIndex].text}): ${CP[fase(k)][cp.value]}\nMateri Pokok: ${materi.options[materi.selectedIndex].text}\nTP: ${tp.options[tp.selectedIndex].text}\n\nINSTRUKSI UTAMA:\nSusun RPP/Modul Ajar lengkap, sistematis, kontekstual, dan siap digunakan guru. Jangan mengubah CP, Materi Pokok, atau TP yang dipilih. Selaraskan dengan Kurikulum Merdeka, Pembelajaran Mendalam, Taksonomi SOLO, dan HOTS. Gunakan istilah Taksonomi SOLO dalam bahasa Indonesia, tanpa istilah bahasa Inggris. Sesuaikan seluruh aktivitas dengan tingkat kelas dan jumlah pertemuan.\n\nWAJIB MEMUAT:\nA. Identitas\nB. Capaian Pembelajaran\nC. Tujuan Pembelajaran\nD. Materi Pokok\nE. KKTP\nF. 8 Dimensi Profil Lulusan\nG. Pertanyaan Pemantik\nH. Langkah-Langkah Pembelajaran untuk setiap pertemuan, dengan Pendahuluan, Kegiatan Inti, dan Penutup\nI. Asesmen Sikap, Religius, Pengetahuan, Psikomotor/Praktik lengkap dengan kriteria, instrumen, rubrik, dan penskoran\nJ. 5 soal pilihan ganda kompleks\nK. 5 soal cerita\nL. Refleksi peserta didik dan guru\nM. Tugas Remedial\nN. Tugas Pengayaan\nO. Penutup dan kolom tanda tangan Kepala Sekolah di kiri serta tanggal dan Guru PAI di kanan.\n\nVARIASI ASESMEN/TUGAS:\nGunakan bentuk tugas yang bervariasi dan relevan dengan materi. Jika terdapat gambar yang relevan dan dapat digunakan, sertakan gambar pada soal/tugas. Jika tidak ada gambar yang relevan atau tersedia, jangan memaksakan gambar.\n\nATURAN KUALITAS:\n- Jangan menambahkan materi di luar ruang lingkup Materi Pokok.\n- Pastikan semua asesmen mengukur TP.\n- Pastikan remedial dan pengayaan sesuai materi dan tingkat kelas.\n- Dokumen rapi, formal, jelas, dan siap dipindahkan ke Word/PDF A4.\n- Teks utama menggunakan warna hitam.\n- Jangan menuliskan atau membahas prompt ini dalam hasil akhir.`;
 }
 
 generateAI.onclick=async()=>{
-  if(!ident||!kelas.value||!semester.value||!tahun.value||!waktu.value||!cp.value||!materi.value||!tp.value){
-    msg.textContent='⚠️ Lengkapi semua data terlebih dahulu.';
-    msg.className='msg err';
-    return;
-  }
+  if(!validasiForm()){msg.textContent='⚠️ Lengkapi semua data terlebih dahulu.';msg.className='msg err';return;}
+  const promptSiap=buatPromptInternal();
+  hasil.textContent='⏳ AI sedang menyusun RPP/Modul Ajar...';
+  msg.className='msg';
   generateAI.disabled=true;
-  generateAI.textContent='⏳ Menyusun RPP...';
-  hasil.textContent='AI sedang menyusun RPP/Modul Ajar...';
   try{
-    const prompt=bangunPrompt();
-    const res=await fetch('/api/generate-rpp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const res=await fetch('/api/generate-rpp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:promptSiap})});
     const raw=await res.text();
     let data;
-    try{data=raw?JSON.parse(raw):{};}catch(e){throw new Error('Server tidak mengembalikan JSON. Pastikan aplikasi dijalankan melalui Vercel/`vercel dev`, bukan Live Server biasa.');}
-    if(!res.ok) throw new Error(data.error||'Gagal membuat RPP.');
-    hasil.textContent=data.text||'AI tidak mengembalikan isi RPP.';
-    msg.textContent='✅ RPP berhasil dibuat.';
+    try{ data=raw?JSON.parse(raw):{}; }catch(_){ throw new Error('Server AI mengembalikan respons yang tidak valid. Pastikan aplikasi sudah di-deploy ke Vercel dan endpoint /api/generate-rpp tersedia dan GEMINI_API_KEY sudah dipasang di Vercel.'); }
+    if(!res.ok) throw new Error(data.error||'Gagal menghubungi AI.');
+    hasil.textContent=data.text||'AI tidak mengembalikan hasil.';
+    msg.textContent='✅ RPP/Modul Ajar berhasil dibuat oleh AI.';
     msg.className='msg ok';
   }catch(e){
-    console.error(e);
     hasil.textContent='';
     msg.textContent='❌ '+e.message;
     msg.className='msg err';
-  }finally{
-    generateAI.disabled=false;
-    generateAI.textContent='🤖 Buat RPP';
-  }
+  }finally{generateAI.disabled=false;}
 };
 </script></body></html>
