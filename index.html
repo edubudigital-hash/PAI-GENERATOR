@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PAI Generator</title>
+<title>e-GEPAI | Web Generate Perangkat Ajar PAI SD</title>
 
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -15,111 +15,134 @@
 }
 
 :root {
-    --red: #b91c1c;
-    --red-dark: #991b1b;
-    --red-light: #fef2f2;
-    --dark: #111827;
-    --gray: #6b7280;
-    --border: #e5e7eb;
-    --background: #f3f4f6;
+    --green: #0f766e;
+    --green-dark: #115e59;
+    --green-deep: #064e3b;
+    --green-soft: #ecfdf5;
+    --gold: #d4a72c;
+    --dark: #10231c;
+    --gray: #64748b;
+    --border: #dbe7e1;
+    --background: #f5f9f7;
     --white: #ffffff;
-    --green: #15803d;
+    --shadow: 0 14px 38px rgba(6, 78, 59, .08);
 }
 
 body {
     margin: 0;
     font-family: "Segoe UI", Arial, sans-serif;
-    background: var(--background);
+    background:
+        radial-gradient(circle at 10% 10%, rgba(212,167,44,.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 90% 20%, rgba(15,118,110,.06) 0 2px, transparent 3px),
+        var(--background);
+    background-size: 34px 34px, 42px 42px, auto;
     color: var(--dark);
 }
 
 /* HEADER */
-
 .header {
-    background: linear-gradient(135deg, #991b1b, #dc2626);
+    background:
+        linear-gradient(135deg, rgba(6,78,59,.98), rgba(15,118,110,.96)),
+        radial-gradient(circle at top right, rgba(212,167,44,.26), transparent 30%);
     color: white;
-    padding: 28px 6%;
+    padding: 24px 5%;
+    position: relative;
+    overflow: hidden;
 }
-
+.header::after {
+    content: "";
+    position: absolute;
+    inset: auto -80px -95px auto;
+    width: 260px;
+    height: 260px;
+    border: 1px solid rgba(255,255,255,.12);
+    transform: rotate(45deg);
+    border-radius: 28px;
+}
 .header-inner {
-    max-width: 1100px;
+    max-width: 1180px;
     margin: auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
 }
-
 .brand {
     display: flex;
     align-items: center;
     gap: 14px;
 }
-
 .logo {
-    width: 48px;
+    min-width: 66px;
     height: 48px;
-    border-radius: 12px;
-    background: white;
-    color: var(--red);
+    padding: 0 10px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
+    letter-spacing: .5px;
 }
-
 .brand h1 {
     margin: 0;
-    font-size: 25px;
+    font-size: 28px;
+    letter-spacing: .2px;
 }
-
 .brand p {
     margin: 4px 0 0;
-    opacity: .9;
+    opacity: .88;
     font-size: 14px;
 }
-
-.badge {
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.15);
-    font-size: 13px;
+.header::before {
+    content: "✦";
+    position: absolute;
+    right: 7%;
+    top: 18%;
+    color: rgba(255,255,255,.18);
+    font-size: 22px;
 }
-
 /* MAIN */
 
 .container {
-    width: 92%;
-    max-width: 1100px;
-    margin: 30px auto 60px;
+    width: min(94%, 1180px);
+    margin: 32px auto 50px;
 }
 
 .welcome {
     margin-bottom: 22px;
+    text-align: left;
 }
 
 .welcome h2 {
     margin: 0 0 7px;
-    font-size: 25px;
+    font-size: clamp(22px, 3vw, 28px);
+    color: var(--green-deep);
 }
 
 .welcome p {
     margin: 0;
     color: var(--gray);
+    font-size: 14px;
 }
 
 .grid {
     display: grid;
     grid-template-columns: 1.15fr .85fr;
-    gap: 20px;
+    gap: 22px;
 }
 
 .card {
-    background: var(--white);
+    background: rgba(255,255,255,.96);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 24px;
     margin-bottom: 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,.04);
+    box-shadow: var(--shadow);
 }
 
 .card-title {
@@ -162,7 +185,7 @@ input[type="text"] {
 
 input[type="text"]:focus {
     outline: none;
-    border-color: var(--red);
+    border-color: var(--green);
     box-shadow: 0 0 0 3px rgba(185,28,28,.08);
 }
 
@@ -202,13 +225,13 @@ input[type="text"]:focus {
 }
 
 .class-option label:hover {
-    border-color: #fca5a5;
+    border-color: #8ed1c0;
 }
 
 .class-option input:checked + label {
-    background: var(--red-light);
-    border-color: var(--red);
-    color: var(--red);
+    background: var(--green-soft);
+    border-color: var(--green);
+    color: var(--green);
 }
 
 /* FASE OTOMATIS */
@@ -228,7 +251,7 @@ input[type="text"]:focus {
 }
 
 .phase-value {
-    color: var(--red);
+    color: var(--green);
     font-size: 18px;
     font-weight: 800;
 }
@@ -257,7 +280,7 @@ input[type="text"]:focus {
 .device input {
     width: 17px;
     height: 17px;
-    accent-color: var(--red);
+    accent-color: var(--green);
 }
 
 .device-info {
@@ -285,17 +308,22 @@ button {
     width: 100%;
     border: none;
     padding: 14px;
-    border-radius: 10px;
-    background: var(--red);
+    border-radius: 11px;
+    background: linear-gradient(135deg, var(--green), var(--green-dark));
     color: white;
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(15,118,110,.18);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+button:hover {
+    background: linear-gradient(135deg, var(--green-dark), var(--green-deep));
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(15,118,110,.22);
 }
 
-button:hover {
-    background: var(--red-dark);
-}
+
 
 button:disabled {
     opacity: .6;
@@ -304,7 +332,8 @@ button:disabled {
 
 .reset {
     margin-top: 9px;
-    background: #374151;
+    background: #334155;
+    box-shadow: none;
 }
 
 .reset:hover {
@@ -338,7 +367,7 @@ button:disabled {
 
 .status.error {
     background: #fef2f2;
-    color: var(--red-dark);
+    color: var(--green-dark);
 }
 
 /* INFO */
@@ -353,16 +382,19 @@ button:disabled {
 }
 
 .info-box strong {
-    color: var(--red);
+    color: var(--green);
 }
 
 /* FOOTER */
 
 footer {
+    margin-top: 10px;
     text-align: center;
-    color: var(--gray);
+    color: #d8f3ea;
+    background: var(--green-deep);
     font-size: 12px;
-    padding: 25px;
+    padding: 22px 16px;
+    line-height: 1.6;
 }
 
 /* RESPONSIVE */
@@ -381,6 +413,23 @@ footer {
 }
 
 @media(max-width: 550px) {
+    .header {
+        padding: 18px 4%;
+    }
+
+    .brand h1 {
+        font-size: 22px;
+    }
+
+    .brand p {
+        font-size: 12px;
+    }
+
+    .logo {
+        min-width: 58px;
+        height: 42px;
+        font-size: 12px;
+    }
 
     .form-row {
         grid-template-columns: 1fr;
@@ -392,10 +441,20 @@ footer {
 
     .container {
         width: 94%;
+        margin-top: 22px;
     }
 
     .card {
         padding: 18px;
+        border-radius: 15px;
+    }
+
+    .button-group {
+        margin-top: 16px;
+    }
+
+    input[type="text"] {
+        padding: 11px 12px;
     }
 }
 </style>
@@ -412,24 +471,19 @@ footer {
         <div class="brand">
 
             <div class="logo">
-                PAI
+                e-GEPAI
             </div>
 
             <div>
-                <h1>PAI Generator</h1>
+                <h1>e-GEPAI</h1>
 
                 <p>
-                    Generator Perangkat Pembelajaran PAI SD
+                    Web Generate Perangkat Ajar PAI SD
                 </p>
             </div>
 
         </div>
-
-        <div class="badge">
-            Versi 2.2
-        </div>
-
-    </div>
+</div>
 
 </header>
 
@@ -892,59 +946,13 @@ footer {
                 </div>
 
             </div>
-
-
-            <!-- CARA KERJA -->
-
-            <div class="card">
-
-                <h3 class="card-title">
-                    Cara Kerja
-                </h3>
-
-                <div class="info-box">
-
-                    <strong>01.</strong>
-                    Isi identitas.
-
-                    <br>
-
-                    <strong>02.</strong>
-                    Pilih kelas.
-
-                    <br>
-
-                    <strong>03.</strong>
-                    Fase ditentukan otomatis.
-
-                    <br>
-
-                    <strong>04.</strong>
-                    Pilih perangkat.
-
-                    <br>
-
-                    <strong>05.</strong>
-                    Template asli diproses.
-
-                    <br>
-
-                    <strong>06.</strong>
-                    Hasil diunduh dalam ZIP.
-
-                </div>
-
-            </div>
-
         </div>
-
     </div>
-
 </main>
 
 
 <footer>
-    PAI Generator · Generator Perangkat Pembelajaran PAI SD
+    @2026 e-GEPAI - Web Generate Perangkat Ajar PAI SD
 </footer>
 
 
