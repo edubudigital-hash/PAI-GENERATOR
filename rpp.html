@@ -1,13 +1,26 @@
 <!DOCTYPE html>
-<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PAI Generator - RPP/Modul Ajar</title><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<style>body{margin:0;font-family:Segoe UI,Arial;background:#f3f4f6;color:#111827}.head{background:#b91c1c;color:#fff;padding:22px}.wrap{max-width:1000px;margin:25px auto;padding:0 16px}.card{background:#fff;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 3px 15px #0000000d}h1{margin:0;font-size:24px}h2{font-size:18px;margin-top:0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-weight:700;font-size:13px;display:block;margin-bottom:6px}input,select,textarea{width:100%;box-sizing:border-box;padding:11px;border:1px solid #d1d5db;border-radius:8px;font:inherit}textarea{min-height:300px;font-family:Consolas,monospace;font-size:12px}button{background:#b91c1c;color:white;border:0;border-radius:9px;padding:12px 16px;font-weight:700;cursor:pointer}.back{background:#374151;float:right}.identity{background:#f9fafb;border:1px solid #e5e7eb;padding:14px;border-radius:8px;line-height:1.8}.msg{padding:12px;border-radius:8px;margin-bottom:15px;display:none}.ok{display:block;background:#ecfdf5;color:#166534}.err{display:block;background:#fef2f2;color:#991b1b}@media(max-width:700px){.grid{grid-template-columns:1fr}.back{float:none;margin-top:12px}}
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>e-GEPAI - Buat RPP/Modul Ajar</title><script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+:root{--green:#0f766e;--green-dark:#115e59;--green-deep:#064e3b;--green-soft:#ecfdf5;--gold:#d4a72c;--dark:#10231c;--gray:#64748b;--border:#dbe7e1;--background:#f5f9f7;--white:#fff;--shadow:0 12px 32px rgba(6,78,59,.08)}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:radial-gradient(circle at 8% 8%,rgba(212,167,44,.08) 0 2px,transparent 3px),radial-gradient(circle at 92% 20%,rgba(15,118,110,.06) 0 2px,transparent 3px),var(--background);background-size:34px 34px,42px 42px,auto;color:var(--dark)}
+.head{background:linear-gradient(135deg,var(--green-deep),var(--green));color:#fff;padding:20px 16px;position:relative;overflow:hidden;box-shadow:0 8px 25px rgba(6,78,59,.16)}
+.head:after{content:"✦";position:absolute;right:7%;top:16%;color:rgba(255,255,255,.16);font-size:28px}
+.wrap{max-width:1100px;margin:28px auto;padding:0 16px}
+.card{background:rgba(255,255,255,.97);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
+h1{margin:0;font-size:25px;letter-spacing:.2px}h2{font-size:18px;margin-top:0;color:var(--green-deep)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{font-weight:700;font-size:13px;display:block;margin-bottom:6px}
+input,select,textarea{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #cbdad4;border-radius:9px;font:inherit;background:#fff;color:var(--dark)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(15,118,110,.10)}
+textarea{min-height:300px;font-family:Consolas,monospace;font-size:12px}
+button{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(15,118,110,.16);transition:.15s ease}
+button:hover{background:linear-gradient(135deg,var(--green-dark),var(--green-deep));transform:translateY(-1px)}.back{background:#334155;float:right;box-shadow:none}.identity{background:#f7fbf9;border:1px solid var(--border);padding:14px;border-radius:9px;line-height:1.8}.msg{padding:12px;border-radius:9px;margin-bottom:15px;display:none}.ok{display:block;background:#ecfdf5;color:#166534}.err{display:block;background:#fef2f2;color:#991b1b}
 .preview-area{margin-top:20px;background:#e5e7eb;padding:20px;border-radius:12px;overflow:auto}
 .paper{width:210mm;min-height:297mm;margin:0 auto;background:#fff;padding:20mm 18mm 18mm;box-shadow:0 2px 12px rgba(0,0,0,.10);color:#111;font-family:"Times New Roman",serif;font-size:12pt;line-height:1.6}
 .paper h1{font-size:17pt;text-align:center;margin:0 0 12px}.paper h2{font-size:14pt;margin:18px 0 8px}.paper h3{font-size:12.5pt;margin:14px 0 6px}.paper p{margin:0 0 8px}.paper ul,.paper ol{margin:6px 0 10px 24px}.paper li{margin:3px 0}.paper table{width:100%;border-collapse:collapse;margin:10px 0;font-size:11pt}.paper th,.paper td{border:1px solid #555;padding:5px 7px;vertical-align:top}.paper th{font-weight:700}.paper hr{border:0;border-top:1px solid #777;margin:14px 0}.paper strong{font-weight:700}.empty-preview{text-align:center;color:#6b7280;padding:50px 0;font-family:Segoe UI,Arial,sans-serif}
 @media(max-width:760px){.paper{width:100%;min-height:auto;padding:25px}.preview-area{padding:8px}}
 @media print{body{background:#fff}.head,.card:not(#hasilCard),#msg,#hasilCard>div:first-child{display:none!important}.wrap{max-width:none;margin:0;padding:0}.card{box-shadow:none;margin:0;padding:0}.preview-area{background:#fff;padding:0}.paper{box-shadow:none;width:auto;min-height:auto;padding:15mm}}
 </style></head>
-<body><div class="head"><div style="max-width:1000px;margin:auto"><button class="back" onclick="location.href='index.html'">← Dashboard</button><h1>✨ Buat RPP/Modul Ajar</h1><div>Pendidikan Agama Islam (PAI) SD</div></div></div>
+<body><div class="head"><div style="max-width:1000px;margin:auto"><button class="back" onclick="location.href='index.html'">← Dashboard</button><h1>e-GEPAI</h1><div>Buat RPP/Modul Ajar · Pendidikan Agama Islam dan Budi Pekerti SD</div></div></div>
 <div class="wrap"><div id="msg" class="msg"></div>
 <div class="card"><h2>Identitas</h2><div id="identity" class="identity">Memuat...</div></div>
 <div class="card"><h2>Data RPP/Modul Ajar</h2><div class="grid">
@@ -21,7 +34,7 @@
 <div style="display:flex;gap:10px;flex-wrap:wrap"><button id="generateAI" style="background:#111827;width:100%">Buat RPP/Modul Ajar</button></div></div>
 <div class="card" id="hasilCard" style="display:none">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-    <div><h2 style="margin-bottom:4px">Preview RPP/Modul Ajar</h2><div style="font-size:13px;color:#6b7280">Tampilan ini adalah preview file yang akan diunduh.</div></div>
+    <div><h2 style="margin-bottom:4px">Preview RPP/Modul Ajar</h2><div style="font-size:13px;color:#6b7280">Tampilan ini adalah preview RPP/Modul Ajar beserta LKPD yang akan diunduh.</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button id="downloadWord" style="background:#111827">⬇️ Download Word</button>
       <button id="printPdf" style="background:#374151">🖨️ Simpan PDF</button>
@@ -242,6 +255,33 @@ Masukkan:
 - Refleksi guru
 - Instrumen/rubrik refleksi
 
+LKPD (LEMBAR KERJA PESERTA DIDIK)
+Tambahkan LKPD sebagai bagian khusus setelah bagian Remedial dan Pengayaan dan sebelum Tanda Tangan.
+
+LKPD wajib:
+- ditujukan langsung untuk peserta didik;
+- menggunakan bahasa yang sesuai tingkat kelas;
+- fokus pada Materi Pokok dan TP yang dipilih;
+- siap dicetak dan dikerjakan murid;
+- memiliki judul, identitas peserta didik, petunjuk, tujuan kegiatan, alat/bahan bila diperlukan, langkah kerja, ruang jawaban, dan refleksi.
+
+1. LKPD BERBASIS PROBLEM BASED LEARNING (PBL)
+- Sajikan masalah nyata dan kontekstual yang dekat dengan kehidupan peserta didik.
+- Arahkan murid mengidentifikasi masalah, mencari informasi, menganalisis, menyusun solusi, dan menyimpulkan.
+- Buat minimal 5 pertanyaan/tugas PBL yang berjenjang dan benar-benar terkait Materi Pokok dan TP.
+
+2. LKPD BERBASIS PROJECT BASED LEARNING (PjBL)
+- Buat proyek sederhana, realistis, aman, dan sesuai tingkat kelas.
+- Cantumkan pertanyaan mendasar, tujuan proyek, alat/bahan, langkah kerja, pembagian tugas bila diperlukan, produk yang dihasilkan, dan kriteria keberhasilan.
+- Buat minimal 5 pertanyaan/tugas PjBL yang membimbing murid dari perencanaan, pelaksanaan, penyajian hasil, sampai refleksi.
+- Produk proyek wajib berkaitan langsung dengan Materi Pokok dan TP.
+
+Tambahkan:
+- ruang jawaban/hasil kerja;
+- refleksi peserta didik;
+- rubrik penilaian LKPD yang sederhana dan jelas.
+- Jangan membuat proyek yang membutuhkan fasilitas yang tidak wajar untuk SD.
+
 TANDA TANGAN
 Di bagian paling akhir gunakan format dua kolom:
 Mengetahui,                                ${ident['<Desa>']}, ................ 20..
@@ -261,6 +301,7 @@ ATURAN KUALITAS:
 - Jumlah pertemuan harus tepat sesuai Alokasi Waktu.
 - Jangan menampilkan prompt atau menjelaskan instruksi kepada pengguna.
 - Hasil akhir harus rapi, siap ditempatkan ke Word/PDF A4.
+- LKPD PBL dan PjBL wajib menjadi bagian dari hasil RPP/Modul Ajar.
 - Gunakan heading dan subheading yang konsisten dengan template referensi.
 - Jangan gunakan tanda Markdown mentah seperti ### atau ** pada hasil akhir; gunakan heading teks biasa dan bullet yang rapi.
 `;
