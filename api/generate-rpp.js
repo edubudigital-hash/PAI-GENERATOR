@@ -1,6 +1,8 @@
 
 // GENERATE RPP - e-GEPAI
-// Fitur: retry otomatis dan model Gemini cadangan
+// Mesin utama: Gemini 3.8 Flash
+// Mesin cadangan: Gemini 3.5 Flash Lite
+// Fitur: retry otomatis dan fallback model
 
 const sleep = (ms) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -63,19 +65,20 @@ export default async function handler(req, res) {
     });
   }
 
-  // MODEL UTAMA
+  // MESIN AI UTAMA
   const primaryModel =
-    process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
+    process.env.GEMINI_MODEL || 'gemini-3.8-flash';
 
-  // MODEL CADANGAN
+  // MESIN AI CADANGAN
   const fallbackModels = (
     process.env.GEMINI_FALLBACK_MODELS ||
-    'gemini-3.1-flash-lite'
+    'gemini-3.5-flash-lite'
   )
     .split(',')
     .map((model) => model.trim())
     .filter(Boolean);
 
+  // DAFTAR URUTAN MODEL
   const models = [
     ...new Set([primaryModel, ...fallbackModels])
   ];
